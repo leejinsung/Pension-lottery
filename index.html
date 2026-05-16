@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로또 빅데이터 예측 연구소</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 650px; margin: 30px auto; background: white; padding: 35px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+        h1 { color: #1e293b; margin-bottom: 5px; font-size: 28px; }
+        .subtitle { color: #64748b; font-size: 14px; margin-bottom: 30px; }
+        
+        .section-title { text-align: left; font-size: 18px; color: #334155; margin-top: 30px; font-weight: bold; border-left: 4px solid #3b82f6; padding-left: 10px; }
+        
+        /* 로또 볼 스타일 */
+        .ball-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; padding: 20px; background: #f8fafc; border-radius: 12px; }
+        .lotto-ball { display: inline-block; width: 46px; height: 46px; line-height: 46px; border-radius: 50%; text-align: center; font-weight: bold; color: white; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        
+        /* 로또 번호대별 색상 표준 매칭 */
+        .ball-1 { background-color: #f59e0b; } /* 1~10 노랑 */
+        .ball-2 { background-color: #3b82f6; } /* 11~20 파랑 */
+        .ball-3 { background-color: #ef4444; } /* 21~30 빨강 */
+        .ball-4 { background-color: #64748b; } /* 31~40 회색 */
+        .ball-5 { background-color: #10b981; } /* 41~45 녹색 */
+
+        /* 테이블 스타일 */
+        .history-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 14px; }
+        .history-table th, .history-table td { padding: 12px; text-align: center; border-bottom: 1px solid #e2e8f0; }
+        .history-table th { background-color: #f1f5f9; color: #475569; font-weight: 600; }
+        
+        /* 상태 배지 */
+        .badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge.success { background-color: #dcfce7; color: #15803d; }
+        .badge.wait { background-color: #fef9c3; color: #a16207; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 로또 빅데이터 예측 연구소</h1>
+    <div class="subtitle">구글 Apps Script 연동형 대시보드 (Hosted on GitHub)</div>
+    
+    <div class="section-title">이번 주 추천 예상 번호</div>
+    <div class="ball-container" id="recommendationZone">
+        <span style="color: #94a3b8;">데이터를 동기화하는 중입니다...</span>
+    </div>
+
+    <div class="section-title">최근 추천 결과 및 당첨 유무 기록</div>
+    <table class="history-table">
+        <thead>
+            <tr>
+                <th>발급 일자</th>
+                <th>추천 조합</th>
+                <th>당첨 유무</th>
+            </tr>
+        </thead>
+        <tbody id="historyBody">
+            <tr>
+                <td colspan="3" style="color: #94a3b8; padding: 30px 0;">구글 서버로부터 기록을 가져오고 있습니다...</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // ⚠️ 중요: 구글 앱스 스크립트 배포 후 생성된 웹앱 URL을 이곳에 넣으세요.
+    const GAS_WEBAPP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL"; 
+
+    function getBallClass(num) {
+        if (num <= 10) return 'ball-1';
+        if (num <= 20) return 'ball-2';
+        if (num <= 30) return 'ball-3';
+        if (num <= 40) return 'ball-4';
+        return 'ball-5';
+    }
+
+    async function loadLottoData() {
+        if (GAS_WEBAPP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL") {
+            renderUI([
+                { date: "2026-05-11", numbers: "5, 14, 22, 31, 40, 44", result: "4등 당첨" },
+                { date: "2026-05-18", numbers: "7, 12, 26, 33, 38, 41", result: "대기중" }
+            ]);
+            return;
+        }
+
+        try {
+            const response = await fetch(GAS_WEBAPP_URL);
+            const data = await response.json();
+            renderUI(data);
+        } catch (error) {
+            console.error("데이터 로드 실패:", error);
+            document.getElementById("historyBody").innerHTML = `<tr><td colspan="3" style="color:#ef4444;">데이터를 불러오는 중 오류가 발생했습니다.</td></tr>`;
+        }
+    }
+
+    function renderUI(data) {
+        const tbody = document.getElementById("historyBody");
+        const recZone = document.getElementById("recommendationZone");
+        
+        tbody.innerHTML = "";
+        
+        if(data.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="3">누적된 기록이 없습니다.</td></tr>`;
+            return;
+        }
+
+        data.forEach(item => {
+            const isWait = item.result.includes("대기중");
+            const badgeClass = isWait ? "badge wait" : "badge success";
+            const formattedDate = new Date(item.date).toLocaleDateString('ko-KR');
+            
+            const row = `<tr>
+                <td>\${formattedDate}</td>
+                <td style="letter-spacing: 1px;"><strong>\${item.numbers}</strong></td>
+                <td><span class="\${badgeClass}">\${item.result}</span></td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+
+        recZone.innerHTML = "";
+        const latestNumbers = data[data.length - 1].numbers.split(", ").map(Number);
+        
+        latestNumbers.forEach(num => {
+            const colorClass = getBallClass(num);
+            recZone.innerHTML += `<span class="lotto-ball \${colorClass}">\${num}</span>`;
+        });
+    }
+
+    window.onload = loadLottoData;
+</script>
+</body>
+</html>
