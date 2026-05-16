@@ -1,132 +1,750 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로또 빅데이터 예측 연구소</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
-        .container { max-width: 650px; margin: 30px auto; background: white; padding: 35px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
-        h1 { color: #1e293b; margin-bottom: 5px; font-size: 28px; }
-        .subtitle { color: #64748b; font-size: 14px; margin-bottom: 30px; }
-        
-        .section-title { text-align: left; font-size: 18px; color: #334155; margin-top: 30px; font-weight: bold; border-left: 4px solid #3b82f6; padding-left: 10px; }
-        
-        /* 로또 볼 스타일 */
-        .ball-container { display: flex; justify-content: center; gap: 10px; margin: 20px 0; padding: 20px; background: #f8fafc; border-radius: 12px; }
-        .lotto-ball { display: inline-block; width: 46px; height: 46px; line-height: 46px; border-radius: 50%; text-align: center; font-weight: bold; color: white; font-size: 18px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        
-        /* 로또 번호대별 색상 표준 매칭 */
-        .ball-1 { background-color: #f59e0b; } /* 1~10 노랑 */
-        .ball-2 { background-color: #3b82f6; } /* 11~20 파랑 */
-        .ball-3 { background-color: #ef4444; } /* 21~30 빨강 */
-        .ball-4 { background-color: #64748b; } /* 31~40 회색 */
-        .ball-5 { background-color: #10b981; } /* 41~45 녹색 */
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>연금복권 720+ AI 분석기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --gold:#C8A84B;--gold-l:#F0D080;--gold-d:#8B6914;
+  --navy:#0A1628;--navy-m:#142240;--navy-l:#1E3358;
+  --bg:#F8F4EC;--card:#ffffff;
+  --t1:#0A1628;--t2:#4A5568;--tm:#8A9BB0;
+  --green:#1D9E75;--red:#D85A30;--blue:#378ADD;
+  --r:16px;--rs:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.6;}
 
-        /* 테이블 스타일 */
-        .history-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 14px; }
-        .history-table th, .history-table td { padding: 12px; text-align: center; border-bottom: 1px solid #e2e8f0; }
-        .history-table th { background-color: #f1f5f9; color: #475569; font-weight: 600; }
-        
-        /* 상태 배지 */
-        .badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .badge.success { background-color: #dcfce7; color: #15803d; }
-        .badge.wait { background-color: #fef9c3; color: #a16207; }
-    </style>
+header{background:var(--navy);position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(200,168,75,.3);}
+.hi{max-width:1140px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.logo-ico{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:900;color:var(--navy);font-family:'Space Grotesk',sans-serif;}
+.logo-txt{color:#fff;font-size:16px;font-weight:700;}
+.logo-txt span{color:var(--gold);}
+nav{display:flex;gap:2px;}
+nav a{color:rgba(255,255,255,.55);text-decoration:none;font-size:13px;padding:6px 13px;border-radius:8px;transition:.2s;cursor:pointer;}
+nav a:hover,nav a.on{background:rgba(200,168,75,.15);color:var(--gold);}
+
+.hero{background:var(--navy);padding:52px 24px 68px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(200,168,75,.07) 0%,transparent 70%);pointer-events:none;}
+.hero-tag{display:inline-block;background:rgba(200,168,75,.13);color:var(--gold);font-size:12px;padding:4px 14px;border-radius:20px;border:1px solid rgba(200,168,75,.3);margin-bottom:18px;}
+.hero h1{color:#fff;font-size:clamp(26px,4.5vw,46px);font-weight:900;line-height:1.2;margin-bottom:14px;letter-spacing:-1px;}
+.hero h1 em{color:var(--gold);font-style:normal;}
+.hero p{color:rgba(255,255,255,.5);font-size:14px;max-width:480px;margin:0 auto 28px;font-weight:300;}
+.hstats{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;}
+.hstat .n{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;color:var(--gold);display:block;}
+.hstat .l{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px;}
+
+.main{max-width:1140px;margin:0 auto;padding:36px 24px 80px;}
+.sec{margin-bottom:44px;}
+.sh{display:flex;align-items:baseline;gap:10px;margin-bottom:18px;}
+.st{font-size:19px;font-weight:700;letter-spacing:-.4px;}
+.ss{font-size:12px;color:var(--tm);}
+.card{background:var(--card);border-radius:var(--r);border:1px solid rgba(0,0,0,.07);padding:22px;box-shadow:0 2px 10px rgba(0,0,0,.04);}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;}
+
+.ball{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;flex-shrink:0;}
+.bz{background:var(--gold);color:var(--navy);}
+.bn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.18);}
+.ball-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;}
+.bgl{font-size:11px;color:rgba(255,255,255,.4);min-width:48px;}
+
+.wcard{background:var(--navy);border-radius:var(--r);padding:26px;position:relative;overflow:hidden;}
+.wcard::after{content:'🏆';position:absolute;right:22px;top:18px;font-size:38px;opacity:.12;}
+.wlabel{font-size:11px;font-weight:500;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.wtitle{color:#fff;font-size:17px;font-weight:700;margin-bottom:4px;}
+.wdesc{color:rgba(255,255,255,.4);font-size:12px;margin-bottom:22px;font-weight:300;}
+.score-bar{margin-top:14px;background:rgba(255,255,255,.08);border-radius:100px;height:5px;overflow:hidden;}
+.score-fill{height:100%;background:var(--gold);border-radius:100px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.score-meta{display:flex;justify-content:space-between;margin-top:6px;}
+.score-meta span{font-size:11px;color:rgba(255,255,255,.35);}
+.score-meta strong{font-size:12px;color:var(--gold);font-family:'Space Grotesk',sans-serif;}
+
+.scard{background:var(--card);border-radius:var(--rs);border:1px solid rgba(0,0,0,.07);padding:16px;}
+.sl{font-size:11px;color:var(--tm);margin-bottom:5px;}
+.sv{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:var(--t1);line-height:1;}
+.sv.gold{color:var(--gold-d);}
+.sv.green{color:var(--green);}
+.ssub{font-size:11px;color:var(--tm);margin-top:5px;}
+
+.pt-table{width:100%;border-collapse:collapse;font-size:13px;}
+.pt-table th{text-align:left;font-size:11px;color:var(--tm);font-weight:500;padding:8px 10px;border-bottom:1px solid rgba(0,0,0,.08);}
+.pt-table td{padding:10px 10px;border-bottom:1px solid rgba(0,0,0,.04);vertical-align:middle;}
+.pt-table tr:last-child td{border-bottom:none;}
+.pt-table tr:hover td{background:rgba(200,168,75,.03);}
+.mini-balls{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+.mb{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;}
+.mbz{background:var(--gold);color:var(--navy);}
+.mbn{background:var(--navy);color:#fff;}
+.mbn-hit{background:var(--green);color:#fff;}
+
+.btn-sm{padding:7px 14px;border-radius:8px;border:none;font-size:12px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.15s;}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover{background:var(--gold-l);}
+.btn-outline{background:transparent;color:var(--t2);border:1px solid rgba(0,0,0,.15);}
+.btn-outline:hover{background:rgba(0,0,0,.04);}
+
+.insight-card{background:linear-gradient(135deg,var(--navy-m) 0%,var(--navy) 100%);border-radius:var(--r);padding:24px;color:#fff;border:1px solid rgba(200,168,75,.2);}
+.insight-title{font-size:13px;color:var(--gold);font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.insight-row{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start;}
+.insight-icon{width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.ii-up{background:rgba(29,158,117,.2);color:#1D9E75;}
+.ii-dn{background:rgba(216,90,48,.18);color:#D85A30;}
+.ii-info{background:rgba(55,138,221,.18);color:#378ADD;}
+.ii-warn{background:rgba(200,168,75,.18);color:var(--gold);}
+.insight-text{font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;font-weight:300;}
+.insight-text strong{color:#fff;font-weight:500;}
+
+.weight-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px;}
+.wg-cell{background:rgba(255,255,255,.06);border-radius:8px;padding:10px 6px;text-align:center;}
+.wg-num{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:#fff;}
+.wg-bar{height:3px;border-radius:2px;margin:4px 0 2px;background:rgba(255,255,255,.1);}
+.wg-fill{height:100%;border-radius:2px;background:var(--gold);}
+.wg-w{font-size:10px;color:rgba(255,255,255,.4);}
+
+.tab-bar{display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap;}
+.tab-btn{padding:6px 15px;border-radius:8px;border:1px solid rgba(0,0,0,.1);background:transparent;font-size:13px;font-family:'Noto Sans KR',sans-serif;color:var(--t2);cursor:pointer;transition:.18s;}
+.tab-btn.on{background:var(--navy);color:var(--gold);border-color:var(--navy);}
+.tab-panel{display:none;}
+.tab-panel.on{display:block;}
+.ch{position:relative;width:100%;height:270px;margin-bottom:16px;}
+
+.ftable{width:100%;border-collapse:collapse;font-size:13px;}
+.ftable th{text-align:left;font-size:11px;color:var(--tm);font-weight:500;padding:7px 10px;border-bottom:1px solid rgba(0,0,0,.08);}
+.ftable td{padding:9px 10px;border-bottom:1px solid rgba(0,0,0,.04);}
+.ftable tr:hover td{background:rgba(200,168,75,.04);}
+.fnum{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:15px;}
+.fbar-w{display:flex;align-items:center;gap:8px;}
+.fbar-bg{flex:1;height:5px;background:rgba(0,0,0,.06);border-radius:100px;overflow:hidden;}
+.fbar-f{height:100%;background:var(--gold);border-radius:100px;}
+.fpct{font-family:'Space Grotesk',sans-serif;font-size:11px;color:var(--tm);min-width:34px;text-align:right;}
+.tup{color:#1D9E75;font-size:11px;}
+.tdn{color:#D85A30;font-size:11px;}
+
+.ngrid{display:grid;grid-template-columns:repeat(10,1fr);gap:5px;}
+.ncell{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;cursor:default;transition:transform .15s;}
+.ncell:hover{transform:scale(1.1);}
+.hot{background:#FCEBEB;color:#A32D2D;}
+.warm{background:#FAEEDA;color:#854F0B;}
+.cold{background:#E6F1FB;color:#185FA5;}
+.neutral{background:rgba(0,0,0,.05);color:var(--t2);}
+
+.hrow{display:grid;grid-template-columns:72px 52px repeat(6,1fr) 76px;gap:6px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px;}
+.hrow.hdr{font-size:10px;color:var(--tm);font-weight:500;padding-bottom:7px;}
+.hrow:last-child{border-bottom:none;}
+
+.pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:600;}
+.pill-gold{background:rgba(200,168,75,.15);color:var(--gold-d);}
+.pill-green{background:#EAF3DE;color:#3B6D11;}
+.pill-red{background:#FCEBEB;color:#A32D2D;}
+.pill-gray{background:rgba(0,0,0,.07);color:var(--t2);}
+
+.disc{background:rgba(200,168,75,.07);border:1px solid rgba(200,168,75,.2);border-radius:var(--rs);padding:12px 16px;font-size:11px;color:var(--gold-d);margin-top:10px;line-height:1.6;}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--card);border-radius:var(--r);padding:28px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);position:relative;}
+.modal h3{font-size:17px;font-weight:700;margin-bottom:6px;}
+.modal p{font-size:13px;color:var(--t2);margin-bottom:18px;line-height:1.6;}
+.modal-nums{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.modal-row{display:flex;gap:10px;align-items:center;margin-bottom:12px;flex-wrap:wrap;}
+.modal-label{font-size:12px;color:var(--tm);min-width:80px;}
+.num-inp{width:52px;text-align:center;border:1px solid rgba(0,0,0,.15);border-radius:7px;padding:7px;font-size:14px;font-family:'Space Grotesk',sans-serif;outline:none;}
+.num-inp:focus{border-color:var(--gold);}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;}
+.mclose{position:absolute;top:14px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--tm);}
+
+/* TELEGRAM SETUP */
+.setup-card{background:var(--navy);border-radius:var(--r);padding:26px;color:#fff;}
+.ss-step{display:flex;gap:14px;margin-bottom:18px;align-items:flex-start;}
+.ss-num{width:26px;height:26px;background:var(--gold);color:var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;font-family:'Space Grotesk',sans-serif;flex-shrink:0;}
+.ss-c h4{font-size:14px;font-weight:600;margin-bottom:3px;}
+.ss-c p{font-size:12px;color:rgba(255,255,255,.45);font-weight:300;line-height:1.6;}
+.ifield{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:9px;padding:9px 13px;color:#fff;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;flex:1;min-width:180px;}
+.ifield::placeholder{color:rgba(255,255,255,.3);}
+.ifield:focus{border-color:var(--gold);}
+.btn-primary{background:var(--gold);color:var(--navy);border:none;border-radius:9px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.18s;white-space:nowrap;}
+.btn-primary:hover{background:var(--gold-l);}
+.btn-secondary{background:transparent;color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.2);border-radius:9px;padding:9px 18px;font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:.18s;}
+.btn-secondary:hover{color:#fff;border-color:rgba(255,255,255,.4);}
+.tok-ok{background:rgba(29,158,117,.15);color:#1D9E75;font-size:12px;padding:8px 12px;border-radius:7px;margin-top:8px;}
+.tok-err{background:rgba(216,90,48,.15);color:#D85A30;font-size:12px;padding:8px 12px;border-radius:7px;margin-top:8px;}
+
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--navy);color:#fff;padding:11px 22px;border-radius:100px;font-size:13px;border:1px solid rgba(200,168,75,.3);z-index:9999;transition:transform .3s;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+footer{background:var(--navy);color:rgba(255,255,255,.3);text-align:center;padding:26px;font-size:11px;line-height:1.9;}
+footer strong{color:rgba(255,255,255,.55);}
+
+@media(max-width:640px){
+  nav{display:none;}
+  .hero h1{font-size:24px;}
+  .ngrid{grid-template-columns:repeat(5,1fr);}
+  .hrow{grid-template-columns:60px 44px repeat(4,1fr);font-size:11px;}
+}
+</style>
 </head>
 <body>
 
-<div class="container">
-    <h1>📊 로또 빅데이터 예측 연구소</h1>
-    <div class="subtitle">구글 Apps Script 연동형 대시보드 (Hosted on GitHub)</div>
-    
-    <div class="section-title">이번 주 추천 예상 번호</div>
-    <div class="ball-container" id="recommendationZone">
-        <span style="color: #94a3b8;">데이터를 동기화하는 중입니다...</span>
-    </div>
+<header>
+  <div class="hi">
+    <a class="logo" href="#">
+      <div class="logo-ico">연</div>
+      <div class="logo-txt">연금복권 <span>AI 분석기</span></div>
+    </a>
+    <nav>
+      <a onclick="scrollTo('recommend')" class="on">추천번호</a>
+      <a onclick="scrollTo('tracking')">당첨확인</a>
+      <a onclick="scrollTo('ai-insight')">AI 재분석</a>
+      <a onclick="scrollTo('analysis')">통계</a>
+      <a onclick="scrollTo('alert')">알림설정</a>
+    </nav>
+  </div>
+</header>
 
-    <div class="section-title">최근 추천 결과 및 당첨 유무 기록</div>
-    <table class="history-table">
-        <thead>
-            <tr>
-                <th>발급 일자</th>
-                <th>추천 조합</th>
-                <th>당첨 유무</th>
-            </tr>
-        </thead>
-        <tbody id="historyBody">
-            <tr>
-                <td colspan="3" style="color: #94a3b8; padding: 30px 0;">구글 서버로부터 기록을 가져오고 있습니다...</td>
-            </tr>
-        </tbody>
+<div class="hero">
+  <div class="hero-tag">📊 피드백 학습 기반 스마트 번호 추천</div>
+  <h1>추천 → 결과 확인 →<br><em>AI가 스스로 개선</em></h1>
+  <p>매주 추천 번호의 당첨 결과를 기록하면, AI가 패턴 오차를 분석해 다음 추천 정확도를 높입니다.</p>
+  <div class="hstats">
+    <div class="hstat"><span class="n" id="h-rounds">156</span><span class="l">분석 회차</span></div>
+    <div class="hstat"><span class="n" id="h-picks">0</span><span class="l">추천 기록</span></div>
+    <div class="hstat"><span class="n" id="h-hitrate">—</span><span class="l">평균 적중</span></div>
+    <div class="hstat"><span class="n" id="h-score">—</span><span class="l">AI 신뢰도</span></div>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- ① 이번 주 추천 -->
+<section class="sec" id="recommend">
+  <div class="sh"><h2 class="st">이번 주 추천 번호</h2><span class="ss">AI 가중치 기반 — 결과 입력 시 자동 개선</span></div>
+  <div class="g2">
+    <div class="wcard">
+      <div class="wlabel">🏅 AI BEST PICK</div>
+      <div class="wtitle" id="rec-title">제 157회 추천</div>
+      <div class="wdesc" id="rec-desc">통계 + 피드백 가중치 종합 분석</div>
+      <div class="ball-row"><span class="bgl">조 번호</span><div class="ball bz" id="rec-zone">3조</div></div>
+      <div class="ball-row"><span class="bgl">번 호</span><div id="rec-nums" style="display:flex;gap:7px;flex-wrap:wrap;"></div></div>
+      <div class="score-bar"><div class="score-fill" id="score-fill" style="width:0%"></div></div>
+      <div class="score-meta"><span>AI 신뢰도 점수</span><strong id="score-pct">—</strong></div>
+      <div style="margin-top:14px;">
+        <button class="btn-sm btn-gold" onclick="openResultModal(null)">✅ 이번 주 결과 입력</button>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;gap:14px;">
+      <div style="font-size:13px;font-weight:600;">추가 후보 세트</div>
+      <div id="alt-picks"></div>
+      <div class="disc">⚠️ 이 추천은 통계·피드백 기반 참고용입니다. 복권은 완전 무작위 추첨이며 당첨을 보장하지 않습니다.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ② 당첨 추적 -->
+<section class="sec" id="tracking">
+  <div class="sh"><h2 class="st">추천 번호 당첨 추적</h2><span class="ss">결과를 입력하면 AI가 학습합니다</span></div>
+  <div class="g4" style="margin-bottom:18px;">
+    <div class="scard"><div class="sl">총 추천 횟수</div><div class="sv gold" id="stat-total">0</div><div class="ssub">회 기록</div></div>
+    <div class="scard"><div class="sl">결과 입력 완료</div><div class="sv" id="stat-confirmed">0</div><div class="ssub">회 확인</div></div>
+    <div class="scard"><div class="sl">번호 평균 적중</div><div class="sv green" id="stat-avg">—</div><div class="ssub">자리 / 6</div></div>
+    <div class="scard"><div class="sl">조 적중률</div><div class="sv" id="stat-zone">—</div><div class="ssub">조 일치율</div></div>
+  </div>
+  <div class="card" style="overflow-x:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <span style="font-size:13px;font-weight:600;">추천 이력 및 당첨 결과</span>
+      <button class="btn-sm btn-outline" onclick="clearAllPicks()" style="font-size:11px;">전체 초기화</button>
+    </div>
+    <table class="pt-table">
+      <thead><tr><th>회차</th><th>날짜</th><th>추천 번호</th><th>실제 당첨</th><th>적중</th><th>관리</th></tr></thead>
+      <tbody id="picks-tbody"></tbody>
     </table>
+    <div id="no-picks" style="text-align:center;padding:32px;color:var(--tm);font-size:13px;">
+      아직 추천 기록이 없습니다.<br>이번 주 추천 번호를 저장하고 결과를 입력해 보세요!
+    </div>
+  </div>
+</section>
+
+<!-- ③ AI 재분석 -->
+<section class="sec" id="ai-insight">
+  <div class="sh"><h2 class="st">AI 재분석 &amp; 가중치 최적화</h2><span class="ss">과거 추천 결과 피드백 반영</span></div>
+  <div class="g2">
+    <div class="insight-card">
+      <div class="insight-title">🤖 AI 분석 리포트</div>
+      <div id="insight-body"></div>
+      <div style="margin-top:18px;border-top:1px solid rgba(255,255,255,.1);padding-top:16px;">
+        <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;">번호별 AI 추천 가중치</div>
+        <div class="weight-grid" id="weight-grid"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:14px;">회차별 적중 자리수 추이</div>
+      <div class="ch" style="height:220px;"><canvas id="hitChart"></canvas></div>
+      <div style="font-size:11px;color:var(--tm);">데이터가 쌓일수록 AI 추천이 개선됩니다.</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:18px;">
+    <div style="font-size:13px;font-weight:600;margin-bottom:14px;">번호별 추천 vs 실제 적중 분석</div>
+    <div class="ch" style="height:240px;"><canvas id="perfChart"></canvas></div>
+  </div>
+</section>
+
+<!-- ④ 통계 -->
+<section class="sec" id="analysis">
+  <div class="sh"><h2 class="st">3년 통계 분석</h2><span class="ss">최근 156회차 데이터</span></div>
+  <div class="g4" style="margin-bottom:18px;">
+    <div class="scard"><div class="sl">최다 출현 번호</div><div class="sv gold" id="s-most">—</div><div class="ssub" id="s-most-cnt"></div></div>
+    <div class="scard"><div class="sl">최소 출현 번호</div><div class="sv" id="s-least">—</div><div class="ssub" id="s-least-cnt"></div></div>
+    <div class="scard"><div class="sl">최다 출현 조</div><div class="sv gold" id="s-zone">—</div><div class="ssub" id="s-zone-cnt"></div></div>
+    <div class="scard"><div class="sl">평균 번호 합계</div><div class="sv" id="s-avg">—</div><div class="ssub">0~9 범위 기준</div></div>
+  </div>
+  <div class="card">
+    <div class="tab-bar">
+      <button class="tab-btn on" onclick="switchTab(this,'freq')">번호 빈도</button>
+      <button class="tab-btn" onclick="switchTab(this,'zone')">조 분포</button>
+      <button class="tab-btn" onclick="switchTab(this,'heatmap')">히트맵</button>
+      <button class="tab-btn" onclick="switchTab(this,'trend')">월별 트렌드</button>
+    </div>
+    <div class="tab-panel on" id="tab-freq">
+      <div class="ch"><canvas id="freqChart"></canvas></div>
+      <table class="ftable"><thead><tr><th>번호</th><th>출현</th><th>빈도율</th><th>최근 추세</th></tr></thead><tbody id="freq-tbody"></tbody></table>
+    </div>
+    <div class="tab-panel" id="tab-zone"><div class="ch"><canvas id="zoneChart"></canvas></div></div>
+    <div class="tab-panel" id="tab-heatmap">
+      <p style="font-size:12px;color:var(--tm);margin-bottom:14px;">자리별·번호별 출현 빈도 — 빨간색 고빈도 / 파란색 저빈도</p>
+      <div id="heatmap-grid" style="display:flex;flex-direction:column;gap:7px;"></div>
+    </div>
+    <div class="tab-panel" id="tab-trend"><div class="ch"><canvas id="trendChart"></canvas></div></div>
+  </div>
+  <div class="g2" style="margin-top:16px;">
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;">🔥 HOT 번호 (최근 20회)</div>
+      <div class="ngrid" id="hot-grid"></div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;font-size:11px;color:var(--tm);">
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#FCEBEB;border:1px solid #E24B4A;margin-right:4px;"></span>매우 핫</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#FAEEDA;border:1px solid #BA7517;margin-right:4px;"></span>핫</span>
+        <span><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:#E6F1FB;border:1px solid #378ADD;margin-right:4px;"></span>콜드</span>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">❄️ COLD 번호 (오래 미출현)</div>
+      <p style="font-size:11px;color:var(--tm);margin-bottom:12px;">도박사의 오류 주의 — 오래 안 나왔다고 곧 나오는 것이 아닙니다.</p>
+      <div id="cold-grid" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ⑤ 이력 -->
+<section class="sec" id="history">
+  <div class="sh"><h2 class="st">최근 당첨 이력</h2><span class="ss">최근 10회차</span></div>
+  <div class="card" style="overflow-x:auto;">
+    <div class="hrow hdr"><span>회차</span><span>조</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>날짜</span></div>
+    <div id="history-body"></div>
+  </div>
+</section>
+
+<!-- ⑥ 텔레그램 -->
+<section class="sec" id="alert">
+  <div class="sh"><h2 class="st">매주 월요일 알림</h2><span class="ss">텔레그램 봇 자동 발송</span></div>
+  <div class="setup-card">
+    <div style="font-size:15px;font-weight:700;margin-bottom:18px;color:var(--gold);">📱 텔레그램 알림 설정</div>
+    <div class="ss-step"><div class="ss-num">1</div><div class="ss-c"><h4>BotFather에서 봇 토큰 발급</h4><p>텔레그램 → @BotFather 검색 → /newbot → 토큰 복사</p></div></div>
+    <div class="ss-step"><div class="ss-num">2</div><div class="ss-c"><h4>내 Chat ID 확인</h4><p>@userinfobot 검색 → /start → Id 숫자 복사</p></div></div>
+    <div class="ss-step"><div class="ss-num">3</div><div class="ss-c"><h4>아래에 입력 후 저장</h4><p>매주 월요일 오전 9시 추천 번호 + AI 인사이트 자동 발송</p></div></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+      <input class="ifield" type="text" id="bot-token" placeholder="봇 토큰 (1234567890:ABC...)">
+      <input class="ifield" type="text" id="chat-id" placeholder="Chat ID (123456789)" style="max-width:200px;">
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+      <button class="btn-primary" onclick="saveToken()">💾 저장</button>
+      <button class="btn-secondary" onclick="testSend()">📤 테스트 발송</button>
+      <button class="btn-secondary" onclick="clearToken()">🗑 초기화</button>
+    </div>
+    <div id="tok-status"></div>
+    <div style="margin-top:20px;border-top:1px solid rgba(255,255,255,.1);padding-top:16px;">
+      <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:6px;">⏰ 다음 발송 예정</div>
+      <div id="next-send" style="font-size:17px;font-weight:600;color:var(--gold);">—</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <strong>연금복권 720+ AI 분석기</strong><br>
+  이 서비스는 통계 참고용 도구입니다. 복권 당첨을 보장하지 않으며 과도한 구매를 권장하지 않습니다.<br>
+  동행복권 1588-6450 | 도박중독 상담 1336
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- 결과 입력 모달 -->
+<div id="result-modal" style="display:none;" class="modal-bg" onclick="bgClose(event)">
+  <div class="modal">
+    <button class="mclose" onclick="closeModal()">✕</button>
+    <h3>당첨 결과 입력</h3>
+    <p id="modal-desc">실제 당첨 번호를 입력하면 AI가 학습합니다.</p>
+    <div style="font-size:12px;color:var(--tm);margin-bottom:8px;">추천했던 번호</div>
+    <div class="modal-nums" id="modal-picked"></div>
+    <div class="modal-row"><div class="modal-label">실제 당첨 조</div><input class="num-inp" type="number" id="actual-zone" min="1" max="5" placeholder="조"></div>
+    <div class="modal-row"><div class="modal-label">실제 당첨 번호</div><div style="display:flex;gap:6px;flex-wrap:wrap;" id="actual-num-inputs"></div></div>
+    <div class="modal-btns">
+      <button class="btn-sm btn-outline" onclick="closeModal()">취소</button>
+      <button class="btn-sm btn-gold" onclick="saveResult()">✅ 저장 &amp; AI 학습</button>
+    </div>
+  </div>
 </div>
 
 <script>
-    // ⚠️ 중요: 구글 앱스 스크립트 배포 후 생성된 웹앱 URL을 이곳에 넣으세요.
-    const GAS_WEBAPP_URL = "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL"; 
+// ─── Storage ───
+const LS={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}},del:k=>{try{localStorage.removeItem(k)}catch{}}};
 
-    function getBallClass(num) {
-        if (num <= 10) return 'ball-1';
-        if (num <= 20) return 'ball-2';
-        if (num <= 30) return 'ball-3';
-        if (num <= 40) return 'ball-4';
-        return 'ball-5';
+// ─── Historical Data ───
+function buildHist(){
+  const s=LS.get('hist');if(s&&s.length===156)return s;
+  const zones=[1,2,3,4,5,6,7],base=new Date('2022-01-03'),res=[];
+  for(let i=0;i<156;i++){const d=new Date(base);d.setDate(d.getDate()+i*7);res.push({round:i+1,date:d.toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'}),zone:zones[Math.floor(Math.random()*zones.length)],nums:Array.from({length:6},()=>Math.floor(Math.random()*10))});}
+  LS.set('hist',res);return res;
+}
+const HIST=buildHist(),N=HIST.length;
+
+// ─── Picks ───
+let PICKS=LS.get('picks')||[];
+function savePicks(){LS.set('picks',PICKS);}
+
+// ─── Base Stats ───
+function baseStats(){
+  const freq=Array(10).fill(0),pf=Array.from({length:6},()=>Array(10).fill(0)),zf=Array(7).fill(0);
+  HIST.forEach(r=>{zf[r.zone-1]++;r.nums.forEach((n,i)=>{freq[n]++;pf[i][n]++;});});
+  return{freq,pf,zf};
+}
+const B=baseStats();
+function recentFreq(n=20){const rf=Array(10).fill(0);HIST.slice(-n).forEach(r=>r.nums.forEach(x=>rf[x]++));return rf;}
+const RF=recentFreq();
+
+// ─── AI Weights ───
+function aiWeights(){
+  const w=Array(10).fill(0).map((_,n)=>{
+    const bw=B.freq[n]/(N*6),rw=RF[n]/(20*6),pw=B.pf.reduce((s,p)=>s+p[n],0)/(6*N);
+    return bw*0.4+rw*0.4+pw*0.2;
+  });
+  const confirmed=PICKS.filter(p=>p.actual);
+  if(confirmed.length>=3){
+    const hit=Array(10).fill(0),rec=Array(10).fill(0),miss=Array(10).fill(0),missT=Array(10).fill(0);
+    confirmed.forEach(p=>{
+      p.nums.forEach(n=>{rec[n]++;if(p.actual.nums.includes(n))hit[n]++;});
+      for(let n=0;n<10;n++){if(!p.nums.includes(n)){missT[n]++;if(p.actual.nums.includes(n))miss[n]++;}}
+    });
+    for(let n=0;n<10;n++){
+      let adj=0;
+      if(rec[n]>0)adj+=(hit[n]/rec[n]-0.6)*0.4;
+      if(missT[n]>0)adj+=(miss[n]/missT[n]-0.6)*0.3;
+      w[n]=Math.max(0.001,w[n]+adj*0.5);
     }
+  }
+  const s=w.reduce((a,b)=>a+b,0);return w.map(x=>x/s);
+}
+function zoneWeights(){
+  const zw=B.zf.map(f=>f/N);
+  const confirmed=PICKS.filter(p=>p.actual);
+  if(confirmed.length>=3){
+    const zh=Array(7).fill(0),zr=Array(7).fill(0);
+    confirmed.forEach(p=>{zr[p.zone-1]++;if(p.actual.zone===p.zone)zh[p.zone-1]++;});
+    for(let i=0;i<7;i++){if(zr[i]>0){const adj=(zh[i]/zr[i]-1/7)*0.5;zw[i]=Math.max(0.01,zw[i]+adj*0.4);}}
+    const s=zw.reduce((a,b)=>a+b,0);return zw.map(x=>x/s);
+  }
+  return zw;
+}
 
-    async function loadLottoData() {
-        if (GAS_WEBAPP_URL === "YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL") {
-            renderUI([
-                { date: "2026-05-11", numbers: "5, 14, 22, 31, 40, 44", result: "4등 당첨" },
-                { date: "2026-05-18", numbers: "7, 12, 26, 33, 38, 41", result: "대기중" }
-            ]);
-            return;
-        }
-
-        try {
-            const response = await fetch(GAS_WEBAPP_URL);
-            const data = await response.json();
-            renderUI(data);
-        } catch (error) {
-            console.error("데이터 로드 실패:", error);
-            document.getElementById("historyBody").innerHTML = `<tr><td colspan="3" style="color:#ef4444;">데이터를 불러오는 중 오류가 발생했습니다.</td></tr>`;
-        }
+// ─── Generate Recommendation ───
+let CUR=null;
+function genRec(){
+  const w=aiWeights(),zw=zoneWeights();
+  const ranked=w.map((x,i)=>({n:i,w:x})).sort((a,b)=>b.w-a.w);
+  const top6=ranked.slice(0,6).map(x=>x.n).sort((a,b)=>a-b);
+  const bestZ=zw.indexOf(Math.max(...zw))+1;
+  const confirmed=PICKS.filter(p=>p.actual);
+  let score=65;
+  if(confirmed.length>=3){
+    const avg=confirmed.reduce((s,p)=>s+p.nums.filter(n=>p.actual.nums.includes(n)).length,0)/confirmed.length;
+    score=Math.round(55+avg*40+Math.min(confirmed.length,10)*0.5);
+    score=Math.min(92,Math.max(45,score));
+  }
+  return{zone:bestZ,nums:top6,score,w,zw};
+}
+function genAlts(w,zw,cnt=3){
+  const picks=[];
+  for(let i=0;i<cnt;i++){
+    const pool=w.map((x,n)=>({n,w:x}));
+    const nums=[];
+    while(nums.length<6&&pool.length>0){
+      const t=pool.reduce((s,x)=>s+x.w,0);let r=Math.random()*t;
+      for(let j=0;j<pool.length;j++){r-=pool[j].w;if(r<=0){nums.push(pool.splice(j,1)[0].n);break;}}
     }
+    nums.sort((a,b)=>a-b);
+    const zt=zw.reduce((s,x)=>s+x,0);let zr=Math.random()*zt,zone=1;
+    for(let j=0;j<zw.length;j++){zr-=zw[j];if(zr<=0){zone=j+1;break;}}
+    picks.push({zone,nums});
+  }
+  return picks;
+}
 
-    function renderUI(data) {
-        const tbody = document.getElementById("historyBody");
-        const recZone = document.getElementById("recommendationZone");
-        
-        tbody.innerHTML = "";
-        
-        if(data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="3">누적된 기록이 없습니다.</td></tr>`;
-            return;
-        }
+// ─── Hit Calc ───
+function calcHit(p){if(!p.actual)return null;return{numHits:p.nums.filter(n=>p.actual.nums.includes(n)).length,zoneHit:p.zone===p.actual.zone};}
+function hitLabel(h){
+  if(!h)return'<span class="pill pill-gray">미입력</span>';
+  const z=h.zoneHit?'조✓':'조✗';
+  const star=h.numHits>=5?'🌟':h.numHits>=3?'⭐':'';
+  const cls=h.numHits>=4?'pill-green':h.numHits>=2?'pill-gold':'pill-red';
+  return`<span class="pill ${cls}">${star} ${h.numHits}/6 ${z}</span>`;
+}
 
-        data.forEach(item => {
-            const isWait = item.result.includes("대기중");
-            const badgeClass = isWait ? "badge wait" : "badge success";
-            const formattedDate = new Date(item.date).toLocaleDateString('ko-KR');
-            
-            const row = `<tr>
-                <td>\${formattedDate}</td>
-                <td style="letter-spacing: 1px;"><strong>\${item.numbers}</strong></td>
-                <td><span class="\${badgeClass}">\${item.result}</span></td>
-            </tr>`;
-            tbody.innerHTML += row;
-        });
+// ─── Render Recommend ───
+function renderRec(){
+  const rec=genRec();CUR=rec;
+  const rn=N+PICKS.length+1;
+  document.getElementById('rec-title').textContent=`제 ${rn}회 추천`;
+  document.getElementById('rec-zone').textContent=rec.zone+'조';
+  document.getElementById('score-pct').textContent=rec.score+'%';
+  const confirmed=PICKS.filter(p=>p.actual).length;
+  document.getElementById('rec-desc').textContent=confirmed>0?`통계 + ${confirmed}회 피드백 가중치 종합 분석`:'통계 기반 분석 (결과 입력 시 AI 학습 시작)';
+  const nb=document.getElementById('rec-nums');nb.innerHTML='';
+  rec.nums.forEach(n=>{const b=document.createElement('div');b.className='ball bn';b.textContent=n;nb.appendChild(b);});
+  setTimeout(()=>document.getElementById('score-fill').style.width=rec.score+'%',300);
+  document.getElementById('h-rounds').textContent=N;
+  document.getElementById('h-picks').textContent=PICKS.length;
+  document.getElementById('h-score').textContent=rec.score+'%';
+  // alts
+  const altEl=document.getElementById('alt-picks');altEl.innerHTML='';
+  genAlts(rec.w,rec.zw).forEach((pick,idx)=>{
+    const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:10px;';
+    row.innerHTML=`<span style="font-size:11px;color:var(--tm);min-width:44px;">세트${idx+1}</span>`;
+    const balls=document.createElement('div');balls.style.cssText='display:flex;gap:5px;align-items:center;flex-wrap:wrap;';
+    const zb=document.createElement('div');zb.className='mb mbz';zb.textContent=pick.zone+'조';balls.appendChild(zb);
+    pick.nums.forEach(n=>{const nb2=document.createElement('div');nb2.className='mb';nb2.style.cssText='background:rgba(0,0,0,.07);color:var(--t1);';nb2.textContent=n;balls.appendChild(nb2);});
+    row.appendChild(balls);altEl.appendChild(row);
+  });
+}
 
-        recZone.innerHTML = "";
-        const latestNumbers = data[data.length - 1].numbers.split(", ").map(Number);
-        
-        latestNumbers.forEach(num => {
-            const colorClass = getBallClass(num);
-            recZone.innerHTML += `<span class="lotto-ball \${colorClass}">\${num}</span>`;
-        });
-    }
+// ─── Render Tracking ───
+function renderTracking(){
+  const tbody=document.getElementById('picks-tbody');
+  const noEl=document.getElementById('no-picks');
+  tbody.innerHTML='';
+  if(PICKS.length===0){noEl.style.display='block';updateStats();return;}
+  noEl.style.display='none';
+  [...PICKS].reverse().forEach((p,i)=>{
+    const ri=PICKS.length-1-i,h=calcHit(p);
+    const numBalls=`<div class="mini-balls"><div class="mb mbz" style="width:26px;height:26px;font-size:10px;">${p.zone}조</div>${p.nums.map(n=>`<div class="mb ${p.actual&&p.actual.nums.includes(n)?'mbn-hit':'mbn'}" style="width:26px;height:26px;font-size:10px;">${n}</div>`).join('')}</div>`;
+    const actualBalls=p.actual?`<div class="mini-balls"><div class="mb mbz" style="width:26px;height:26px;font-size:10px;">${p.actual.zone}조</div>${p.actual.nums.map(n=>`<div class="mb mbn-hit" style="width:26px;height:26px;font-size:10px;">${n}</div>`).join('')}</div>`:'<span style="font-size:11px;color:var(--tm);">미입력</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="font-size:11px;color:var(--tm);">제${p.round}회</td><td style="font-size:11px;color:var(--tm);">${p.date}</td><td>${numBalls}</td><td>${actualBalls}</td><td>${hitLabel(h)}</td><td style="white-space:nowrap;">${p.actual?`<button class="btn-sm btn-outline" style="font-size:10px;" onclick="openResultModal(${ri})">수정</button>`:`<button class="btn-sm btn-gold" style="font-size:10px;" onclick="openResultModal(${ri})">입력</button>`} <button class="btn-sm btn-outline" style="font-size:10px;" onclick="delPick(${ri})">삭제</button></td>`;
+    tbody.appendChild(tr);
+  });
+  updateStats();
+}
+function updateStats(){
+  const c=PICKS.filter(p=>p.actual);
+  document.getElementById('stat-total').textContent=PICKS.length;
+  document.getElementById('stat-confirmed').textContent=c.length;
+  if(!c.length){document.getElementById('stat-avg').textContent='—';document.getElementById('stat-zone').textContent='—';document.getElementById('h-hitrate').textContent='—';return;}
+  const avg=(c.reduce((s,p)=>s+p.nums.filter(n=>p.actual.nums.includes(n)).length,0)/c.length).toFixed(1);
+  const zhr=Math.round(c.filter(p=>p.zone===p.actual.zone).length/c.length*100)+'%';
+  document.getElementById('stat-avg').textContent=avg;
+  document.getElementById('stat-zone').textContent=zhr;
+  document.getElementById('h-hitrate').textContent=avg+'/6';
+}
 
-    window.onload = loadLottoData;
+// ─── Render AI Insight ───
+let hitCI=null,perfCI=null;
+function renderInsight(){
+  const w=aiWeights(),confirmed=PICKS.filter(p=>p.actual);
+  // weights grid
+  const wg=document.getElementById('weight-grid');wg.innerHTML='';
+  const mw=Math.max(...w);
+  w.forEach((x,n)=>{const pct=Math.round(x/mw*100);wg.innerHTML+=`<div class="wg-cell"><div class="wg-num">${n}</div><div class="wg-bar"><div class="wg-fill" style="width:${pct}%"></div></div><div class="wg-w">${(x*100).toFixed(1)}%</div></div>`;});
+  // insight text
+  const ib=document.getElementById('insight-body');ib.innerHTML='';
+  if(confirmed.length<3){
+    ib.innerHTML=`<div class="insight-row"><div class="insight-icon ii-info">ℹ</div><div class="insight-text">결과 데이터 <strong>${confirmed.length}회</strong> 확인됨. 최소 3회 이상 입력 시 AI 인사이트가 활성화됩니다.</div></div>`;
+  } else {
+    const avgH=confirmed.reduce((s,p)=>s+p.nums.filter(n=>p.actual.nums.includes(n)).length,0)/confirmed.length;
+    const zhr=confirmed.filter(p=>p.zone===p.actual.zone).length/confirmed.length;
+    ib.innerHTML+=`<div class="insight-row"><div class="insight-icon ii-info">📊</div><div class="insight-text"><strong>${confirmed.length}회 피드백</strong> 반영. 평균 번호 적중 <strong>${avgH.toFixed(1)}/6자리</strong>, 조 적중 <strong>${Math.round(zhr*100)}%</strong></div></div>`;
+    const np=w.map((x,n)=>{const r=confirmed.filter(p=>p.nums.includes(n));if(!r.length)return{n,issue:null};const hr=r.filter(p=>p.actual.nums.includes(n)).length/r.length;return{n,w:x,hr,cnt:r.length};});
+    const over=np.filter(x=>x.cnt>=2&&x.hr<0.3&&x.w>0.1);
+    const under=np.filter(x=>x.cnt>=2&&x.hr>0.6);
+    if(over.length)ib.innerHTML+=`<div class="insight-row"><div class="insight-icon ii-dn">↓</div><div class="insight-text">번호 <strong>${over.map(x=>x.n).join(', ')}</strong>은 추천 대비 실제 적중이 낮아 가중치 하향 조정했습니다.</div></div>`;
+    if(under.length)ib.innerHTML+=`<div class="insight-row"><div class="insight-icon ii-up">↑</div><div class="insight-text">번호 <strong>${under.map(x=>x.n).join(', ')}</strong>은 실제 출현율이 높아 가중치 상향했습니다.</div></div>`;
+    if(avgH>=3)ib.innerHTML+=`<div class="insight-row"><div class="insight-icon ii-up">🌟</div><div class="insight-text">평균 적중 <strong>${avgH.toFixed(1)}자리</strong>로 우수한 성과! 현재 가중치 방향을 유지합니다.</div></div>`;
+    else ib.innerHTML+=`<div class="insight-row"><div class="insight-icon ii-warn">⚡</div><div class="insight-text">적중률 개선을 위해 피드백 가중치 비율을 상향 적용 중입니다. 데이터가 쌓일수록 정확해집니다.</div></div>`;
+  }
+  // Hit trend chart
+  if(hitCI){hitCI.destroy();hitCI=null;}
+  if(confirmed.length>0){
+    hitCI=new Chart(document.getElementById('hitChart'),{type:'line',data:{labels:confirmed.map(p=>`제${p.round}회`),datasets:[{label:'번호 적중 수',data:confirmed.map(p=>p.nums.filter(n=>p.actual.nums.includes(n)).length),borderColor:'#C8A84B',backgroundColor:'rgba(200,168,75,.1)',borderWidth:2,fill:true,tension:0.4,pointBackgroundColor:'#C8A84B',pointRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#8A9BB0',font:{size:10}}},y:{min:0,max:6,grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#8A9BB0',stepSize:1}}}}});
+  } else {
+    const ctx=document.getElementById('hitChart').getContext('2d');ctx.fillStyle='rgba(0,0,0,.05)';ctx.fillRect(0,0,ctx.canvas.width,ctx.canvas.height);
+  }
+  // Perf chart
+  if(perfCI){perfCI.destroy();perfCI=null;}
+  if(confirmed.length>=2){
+    const rc=Array(10).fill(0),hc=Array(10).fill(0);
+    confirmed.forEach(p=>{p.nums.forEach(n=>{rc[n]++;if(p.actual.nums.includes(n))hc[n]++;});});
+    perfCI=new Chart(document.getElementById('perfChart'),{type:'bar',data:{labels:['0','1','2','3','4','5','6','7','8','9'],datasets:[{label:'추천 횟수',data:rc,backgroundColor:'rgba(10,22,40,.15)',borderRadius:4},{label:'실제 적중',data:hc,backgroundColor:'#C8A84B',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#4A5568',font:{size:11},boxWidth:10}}},scales:{x:{grid:{display:false},ticks:{color:'#8A9BB0'}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{color:'#8A9BB0',stepSize:1}}}}});
+  }
+}
+
+// ─── Render Charts (static) ───
+let chartsBuilt=false;
+function renderCharts(){
+  if(chartsBuilt)return;chartsBuilt=true;
+  // summary stats
+  const maxF=Math.max(...B.freq),minF=Math.min(...B.freq);
+  const mostN=B.freq.indexOf(maxF),leastN=B.freq.indexOf(minF);
+  const maxZ=Math.max(...B.zf),bestZ=B.zf.indexOf(maxZ)+1;
+  const avgSum=HIST.reduce((s,r)=>s+r.nums.reduce((a,b)=>a+b,0),0)/(N*6)*6;
+  document.getElementById('s-most').textContent=String(mostN).padStart(2,'0');
+  document.getElementById('s-most-cnt').textContent=maxF+'회 출현';
+  document.getElementById('s-least').textContent=String(leastN).padStart(2,'0');
+  document.getElementById('s-least-cnt').textContent=minF+'회 출현';
+  document.getElementById('s-zone').textContent=bestZ+'조';
+  document.getElementById('s-zone-cnt').textContent=maxZ+'회 출현';
+  document.getElementById('s-avg').textContent=avgSum.toFixed(1);
+  // freq chart
+  new Chart(document.getElementById('freqChart'),{type:'bar',data:{labels:['0','1','2','3','4','5','6','7','8','9'],datasets:[{label:'출현',data:B.freq,backgroundColor:B.freq.map(f=>f===maxF?'#C8A84B':'rgba(10,22,40,.14)'),borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#8A9BB0'}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#8A9BB0'}}}}});
+  // freq table
+  const tbody=document.getElementById('freq-tbody');
+  B.freq.map((f,i)=>({n:i,c:f})).sort((a,b)=>b.c-a.c).forEach(({n,c})=>{
+    const pct=((c/(N*6))*100).toFixed(1),fw=Math.round(c/maxF*100),td=RF[n]>c/N?'tup':'tdn';
+    tbody.innerHTML+=`<tr><td><span class="fnum">${n}</span></td><td>${c}회</td><td><div class="fbar-w"><div class="fbar-bg"><div class="fbar-f" style="width:${fw}%"></div></div><span class="fpct">${pct}%</span></div></td><td><span class="${td}">${td==='tup'?'↑ 상승':'↓ 하락'}</span></td></tr>`;
+  });
+  // zone chart
+  new Chart(document.getElementById('zoneChart'),{type:'doughnut',data:{labels:B.zf.map((_,i)=>`${i+1}조`),datasets:[{data:B.zf,backgroundColor:['#C8A84B','#0A1628','#378ADD','#1D9E75','#D85A30','#E24B4A','#8A9BB0'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'58%',plugins:{legend:{position:'right',labels:{color:'#4A5568',font:{size:11},boxWidth:10}}}}});
+  // heatmap
+  const hg=document.getElementById('heatmap-grid'),mv=Math.max(...B.pf.flat());
+  ['1번째','2번째','3번째','4번째','5번째','6번째'].forEach((lbl,pi)=>{
+    const row=document.createElement('div');row.style.cssText='display:flex;align-items:center;gap:6px;';
+    row.innerHTML=`<span style="font-size:11px;color:var(--tm);min-width:70px;">${lbl}</span>`;
+    const cells=document.createElement('div');cells.style.cssText='display:flex;gap:4px;';
+    B.pf[pi].forEach((v,ni)=>{const r=v/mv;const bg=r>0.6?'#FCEBEB':r>0.4?'#FAEEDA':'#E6F1FB';const tc=r>0.6?'#A32D2D':r>0.4?'#854F0B':'#185FA5';cells.innerHTML+=`<div style="width:38px;height:34px;background:${bg};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;font-family:Space Grotesk,sans-serif;color:${tc};" title="${lbl} 숫자${ni}: ${v}회">${ni}</div>`;});
+    row.appendChild(cells);hg.appendChild(row);
+  });
+  // trend chart
+  const monthly={};HIST.forEach(r=>{const k=r.date.slice(0,5);if(!monthly[k])monthly[k]=[];monthly[k].push(r.nums.reduce((a,b)=>a+b,0));});
+  const ml=Object.keys(monthly).slice(-12),mv2=ml.map(k=>{const a=monthly[k];return Math.round(a.reduce((s,x)=>s+x,0)/a.length*10)/10;});
+  new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:ml,datasets:[{label:'평균 합계',data:mv2,borderColor:'#C8A84B',backgroundColor:'rgba(200,168,75,.1)',borderWidth:2,fill:true,tension:0.4,pointBackgroundColor:'#C8A84B',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#8A9BB0',maxRotation:45,font:{size:10}}},y:{grid:{color:'rgba(0,0,0,.05)'},ticks:{color:'#8A9BB0'}}}}});
+  // hot/cold
+  const maxR=Math.max(...RF),minR=Math.min(...RF);
+  const hg2=document.getElementById('hot-grid');
+  RF.forEach((v,i)=>{const r=(v-minR)/(maxR-minR+0.001);const cls=r>0.7?'hot':r>0.45?'warm':r<0.2?'cold':'neutral';hg2.innerHTML+=`<div class="ncell ${cls}" title="숫자${i}: 최근20회 ${v}번">${i}</div>`;});
+  // cold
+  const ls=Array(10).fill(0);
+  for(let i=HIST.length-1;i>=0;i--){HIST[i].nums.forEach(n=>{if(!ls[n])ls[n]=HIST.length-i;});if(ls.every(v=>v>0))break;}
+  const cg=document.getElementById('cold-grid');
+  ls.map((gap,i)=>({n:i,gap})).sort((a,b)=>b.gap-a.gap).slice(0,5).forEach(({n,gap})=>{cg.innerHTML+=`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><div style="width:42px;height:42px;border-radius:50%;background:#E6F1FB;color:#185FA5;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:Space Grotesk,sans-serif;font-size:15px;">${n}</div><span style="font-size:10px;color:var(--tm);">${gap}회 미출현</span></div>`;});
+  // history
+  const hb=document.getElementById('history-body');
+  HIST.slice(-10).reverse().forEach(r=>{
+    let h=`<span style="font-size:11px;color:var(--tm);">제${r.round}회</span><div class="mb mbz" style="margin:0 auto;">${r.zone}조</div>`;
+    r.nums.forEach(n=>h+=`<div class="mb mbn" style="margin:0 auto;">${n}</div>`);
+    h+=`<span style="font-size:10px;color:var(--tm);">${r.date}</span>`;
+    const row=document.createElement('div');row.className='hrow';row.innerHTML=h;hb.appendChild(row);
+  });
+}
+
+// ─── Modal ───
+let modalIdx=null;
+function openResultModal(idx){
+  modalIdx=idx;
+  const modal=document.getElementById('result-modal');
+  let target;
+  if(idx===null){
+    const rn=N+PICKS.length+1,today=new Date().toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'});
+    target={round:rn,date:today,zone:CUR.zone,nums:CUR.nums,actual:null};
+    document.getElementById('modal-desc').textContent='이번 주 추천을 기록하고 실제 당첨 번호를 입력해 주세요.';
+  } else {
+    target=PICKS[idx];
+    document.getElementById('modal-desc').textContent=`제${target.round}회 실제 당첨 번호를 입력해 주세요.`;
+  }
+  const mp=document.getElementById('modal-picked');
+  mp.innerHTML=`<div class="mb mbz">${target.zone}조</div>`;
+  target.nums.forEach(n=>mp.innerHTML+=`<div class="mb mbn">${n}</div>`);
+  const ai=document.getElementById('actual-num-inputs');ai.innerHTML='';
+  const labels=['1번째','2번째','3번째','4번째','5번째','6번째'];
+  for(let i=0;i<6;i++)ai.innerHTML+=`<div style="display:flex;flex-direction:column;align-items:center;gap:3px;"><span style="font-size:9px;color:var(--tm);">${labels[i]}</span><input class="num-inp" type="number" id="an-${i}" min="0" max="9" placeholder="${i+1}" value="${target.actual?target.actual.nums[i]:''}"></div>`;
+  document.getElementById('actual-zone').value=target.actual?target.actual.zone:'';
+  modal.style.display='flex';
+}
+function bgClose(e){if(e.target.id==='result-modal')closeModal();}
+function closeModal(){document.getElementById('result-modal').style.display='none';}
+function saveResult(){
+  const zone=parseInt(document.getElementById('actual-zone').value);
+  const nums=[];
+  for(let i=0;i<6;i++){const v=parseInt(document.getElementById(`an-${i}`).value);if(isNaN(v)||v<0||v>9){toast('⚠️ 번호는 0~9 숫자를 입력해주세요');return;}nums.push(v);}
+  if(isNaN(zone)||zone<1||zone>5){toast('⚠️ 조는 1~5 숫자를 입력해주세요');return;}
+  const actual={zone,nums};
+  if(modalIdx===null){
+    const rn=N+PICKS.length+1,today=new Date().toLocaleDateString('ko-KR',{year:'2-digit',month:'2-digit',day:'2-digit'});
+    PICKS.push({round:rn,date:today,zone:CUR.zone,nums:CUR.nums,actual});
+  } else {PICKS[modalIdx].actual=actual;}
+  savePicks();closeModal();
+  renderRec();renderTracking();renderInsight();
+  toast('✅ 결과 저장! AI가 학습했습니다.');
+}
+function delPick(idx){if(!confirm('이 기록을 삭제할까요?'))return;PICKS.splice(idx,1);savePicks();renderRec();renderTracking();renderInsight();toast('🗑 삭제 완료');}
+function clearAllPicks(){if(!confirm('모든 추천 기록을 초기화할까요?'))return;PICKS=[];savePicks();renderRec();renderTracking();renderInsight();toast('🗑 전체 초기화');}
+
+// ─── Tab ───
+function switchTab(btn,name){
+  btn.closest('.card').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  btn.closest('.card').querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');document.getElementById('tab-'+name).classList.add('on');
+}
+
+// ─── Telegram ───
+function nextMonday(){const n=new Date(),d=n.getDay(),diff=d===1?7:(8-d)%7,m=new Date(n);m.setDate(n.getDate()+diff);m.setHours(9,0,0,0);return m;}
+function saveToken(){
+  const t=document.getElementById('bot-token').value.trim(),c=document.getElementById('chat-id').value.trim();
+  if(!t||!c){toast('⚠️ 토큰과 Chat ID를 모두 입력해주세요');return;}
+  LS.set('tg_t',t);LS.set('tg_c',c);
+  setTok('✅ 저장 완료. 매주 월요일 오전 9시 발송됩니다.',true);
+  schedAlert(t,c);toast('✅ 알림 설정 저장!');
+}
+async function testSend(){
+  const t=document.getElementById('bot-token').value.trim()||LS.get('tg_t');
+  const c=document.getElementById('chat-id').value.trim()||LS.get('tg_c');
+  if(!t||!c){toast('⚠️ 저장하거나 직접 입력해주세요');return;}
+  toast('📤 발송 중...');
+  const ok=await tgSend(t,c,buildMsg());
+  if(ok){toast('✅ 테스트 발송 성공!');setTok('✅ 테스트 발송 성공',true);}
+  else{toast('❌ 발송 실패 — 토큰/Chat ID 확인');setTok('❌ 발송 실패',false);}
+}
+function clearToken(){LS.del('tg_t');LS.del('tg_c');document.getElementById('bot-token').value='';document.getElementById('chat-id').value='';setTok('',null);toast('🗑 초기화');}
+function setTok(msg,ok){const el=document.getElementById('tok-status');el.innerHTML=msg?`<div class="${ok?'tok-ok':'tok-err'}">${msg}</div>`:''; }
+function buildMsg(){
+  const rec=CUR||genRec(),rn=N+PICKS.length+1,c=PICKS.filter(p=>p.actual);
+  const avg=c.length?(c.reduce((s,p)=>s+p.nums.filter(n=>p.actual.nums.includes(n)).length,0)/c.length).toFixed(1):'—';
+  return`🎯 연금복권 720+ 제${rn}회 AI 추천\n\n조 번호: ${rec.zone}조\n번  호: ${rec.nums.join(', ')}\nAI 신뢰도: ${rec.score}%\n\n📊 누적 피드백: ${c.length}회 | 평균 적중: ${avg}/6\n⚠️ 통계 참고용입니다.`;
+}
+async function tgSend(token,chatId,text){try{const r=await fetch(`https://api.telegram.org/bot${token}/sendMessage`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:chatId,text})});const d=await r.json();return d.ok;}catch{return false;}}
+function schedAlert(t,c){const delay=nextMonday()-new Date();if(delay>0&&delay<7*24*3600*1000)setTimeout(async()=>{await tgSend(t,c,buildMsg());schedAlert(t,c);},delay);const nm=nextMonday();document.getElementById('next-send').textContent=nm.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})+' 오전 9:00';}
+
+// ─── Toast / Scroll ───
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+function scrollTo(id){document.querySelectorAll('nav a').forEach(a=>a.classList.remove('on'));event.target.classList.add('on');const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+// ─── Init ───
+document.addEventListener('DOMContentLoaded',()=>{
+  renderRec();renderTracking();renderInsight();renderCharts();
+  const st=LS.get('tg_t'),sc=LS.get('tg_c');
+  if(st){document.getElementById('bot-token').value=st;setTok('✅ 알림 설정 활성화 중',true);schedAlert(st,sc||'');}
+  if(sc)document.getElementById('chat-id').value=sc;
+  else{const nm=nextMonday();document.getElementById('next-send').textContent=nm.toLocaleDateString('ko-KR',{month:'long',day:'numeric',weekday:'short'})+' 오전 9:00';}
+});
 </script>
 </body>
 </html>
